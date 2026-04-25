@@ -19,16 +19,64 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Verify CI workflow succeeded on tagged commit
-        uses: rohzb/ci-actions/wait-for-workflows@fa15ae6132d071b36c875d64979fa70019b0e49f
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          workflows: '["CI"]'
-          ref: ${{ github.sha }}
-          mode: all_success
-          timeout-seconds: "1200"
-          poll-interval-seconds: "15"
-          require-found: "true"
-          fail-fast: "false"
+          script: |
+            const { owner, repo } = context.repo;
+            const ref = context.sha;
+            const expectedName = "CI";
+            const timeoutMs = 20 * 60 * 1000;
+            const pollIntervalMs = 15 * 1000;
+            const deadline = Date.now() + timeoutMs;
+
+            while (Date.now() < deadline) {
+              const res = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref,
+                per_page: 100,
+              });
+
+              const candidates = res.data.check_runs.filter((run) => run.name === expectedName);
+              if (candidates.length === 0) {
+                core.info(
+                  `No '${expectedName}' check run found yet for commit ${ref}. Retrying in ${pollIntervalMs / 1000}s...`
+                );
+                await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+                continue;
+              }
+
+              const successful = candidates.some(
+                (run) => run.status === "completed" && run.conclusion === "success"
+              );
+              if (successful) {
+                core.info(`'${expectedName}' succeeded for commit ${ref}.`);
+                return;
+              }
+
+              const anyCompleted = candidates.some((run) => run.status === "completed");
+              if (anyCompleted) {
+                const states = candidates
+                  .map((run) => `${run.id}:${run.status}/${run.conclusion}`)
+                  .join(", ");
+                core.setFailed(
+                  `'${expectedName}' completed without success for commit ${ref}. Found: ${states}`
+                );
+                return;
+              }
+
+              const states = candidates
+                .map((run) => `${run.id}:${run.status}/${run.conclusion}`)
+                .join(", ");
+              core.info(
+                `'${expectedName}' still running for commit ${ref}. Current: ${states}. Retrying in ${pollIntervalMs / 1000}s...`
+              );
+              await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+            }
+
+            core.setFailed(
+              `Timed out waiting for '${expectedName}' to succeed for commit ${ref} after ${timeoutMs / 60000} minutes.`
+            );
 
   build-python:
     runs-on: ubuntu-latest

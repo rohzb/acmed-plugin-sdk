@@ -21,6 +21,6 @@ Tag push triggers `.github/workflows/release.yml` and creates:
 - GitHub release with attached dist files
 - Optional PyPI publish when `PYPI_API_TOKEN` secret is configured
 - Release gating that waits for `.github/workflows/ci.yml` (`CI`) to succeed on
-  the tagged commit via `rohzb/ci-actions/wait-for-workflows`
+  the tagged commit
 - Tag/version/changelog consistency validation (`vX.Y.Z`, `pyproject.toml`,
   and `CHANGELOG.md` section)
