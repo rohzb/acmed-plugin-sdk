@@ -122,7 +122,9 @@ jobs:
         id: base_meta
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
         with:
-          images: ghcr.io/${{ github.repository_owner }}/acmed-plugin-base-image
+          images: |
+            ghcr.io/${{ github.repository_owner }}/acmed-plugin-base-image
+            ghcr.io/${{ github.repository_owner }}/acmed-plugin-sdk
           tags: |
             type=raw,value=${{ github.ref_name }}
             type=sha
