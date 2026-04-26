@@ -24,6 +24,11 @@ Core models:
 - `Capabilities`
 - `HealthStatus`
 
+Full contract reference:
+
+- [`docs/plugin-api-contract.md`](docs/plugin-api-contract.md)
+- Documentation index: [`docs/README.md`](docs/README.md)
+
 ## Requirements
 
 - Python `>=3.11`

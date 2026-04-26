@@ -2,6 +2,9 @@
 
 This module standardizes endpoint behavior and optional service-token
 authentication so plugin services do not have to re-implement it.
+
+Author: ACMED Contributors
+License: MIT
 """
 
 from __future__ import annotations
@@ -34,7 +37,14 @@ class PluginServerSettings:
 
 
 def _build_auth_dependency(settings: PluginServerSettings) -> Callable[..., None]:
-    """Create auth dependency callable based on settings."""
+    """Create auth dependency callable based on settings.
+
+    Args:
+        settings: Server authentication behavior configuration.
+
+    Returns:
+        FastAPI dependency callable that enforces bearer auth when enabled.
+    """
 
     def _no_auth() -> None:
         return None
@@ -64,7 +74,15 @@ def create_plugin_app(
     handler: PluginHandler,
     settings: PluginServerSettings | None = None,
 ) -> FastAPI:
-    """Create a FastAPI app exposing canonical plugin endpoints."""
+    """Create a FastAPI app exposing canonical plugin endpoints.
+
+    Args:
+        handler: Plugin handler implementation providing business logic.
+        settings: Optional runtime server/auth configuration.
+
+    Returns:
+        Configured FastAPI application exposing health, capabilities, and issue endpoints.
+    """
 
     resolved = settings or PluginServerSettings()
     auth = _build_auth_dependency(resolved)

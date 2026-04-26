@@ -3,6 +3,9 @@
 The same models are used by both local and remote adapters so plugin behavior is
 portable. Remote transport is HTTP+JSON in v1, but the model layer is transport
 agnostic by design.
+
+Author: ACMED Contributors
+License: MIT
 """
 
 from __future__ import annotations
@@ -30,7 +33,7 @@ ReasonCode = Literal[
 
 
 class IssueRequest(BaseModel):
-    """Normalized issue call payload sent by acmed-core.
+    """Normalized issue call payload sent by acmed.
 
     Args:
         api_version: Contract version expected by the caller.
@@ -38,7 +41,7 @@ class IssueRequest(BaseModel):
         dns_names: Identifiers that must appear in the certificate SAN set.
         common_name: Optional CN when issuer tooling needs it.
         csr_pem: Optional CSR payload in PEM format.
-        profile: Resolved issuer profile projection from acmed-core.
+        profile: Resolved issuer profile projection from acmed.
     """
 
     api_version: str = PLUGIN_API_VERSION
@@ -92,6 +95,13 @@ class HealthStatus(BaseModel):
 
 
 def is_retryable_reason(reason_code: str) -> bool:
-    """Return whether a reason code is retryable in v1 semantics."""
+    """Return whether a reason code is retryable in v1 semantics.
+
+    Args:
+        reason_code: Contract reason-code string from plugin response.
+
+    Returns:
+        ``True`` when the reason is considered retryable by acmed policy.
+    """
 
     return reason_code in {"timeout", "network_error", "rate_limited"}
