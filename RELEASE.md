@@ -20,6 +20,7 @@ Tag push triggers `.github/workflows/release.yml` and creates:
 - Python artifacts (`sdist` + wheel)
 - GitHub release with attached dist files
 - Optional PyPI publish when `PYPI_API_TOKEN` secret is configured
+- plugin base image publish to `ghcr.io/<owner>/acmed-plugin-base-image`
 - Release gating that waits for `.github/workflows/ci.yml` (`CI`) to succeed on
   the tagged commit
 - Tag/version/changelog consistency validation (`vX.Y.Z`, `pyproject.toml`,

@@ -51,3 +51,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
           python -m build
+
+  docker-base-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+
+      - name: Build base image
+        run: |
+          docker build \
+            -f docker/base-image/Dockerfile \
+            --build-arg ACMED_PLUGIN_SDK_SPEC='acmed-plugin-sdk>=0.2.0' \
+            --build-arg ACMED_PLUGIN_SDK_FALLBACK="https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz" \
+            -t acmed-plugin-base:ci .
+
+      - name: Smoke test base image
+        run: |
+          docker run --rm acmed-plugin-base:ci python -c "from acmed_plugin_sdk import IssueRequest; print(IssueRequest.__name__)"

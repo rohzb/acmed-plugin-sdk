@@ -29,6 +29,16 @@ Full contract reference:
 - [`docs/plugin-api-contract.md`](docs/plugin-api-contract.md)
 - Documentation index: [`docs/README.md`](docs/README.md)
 
+Examples:
+
+- [`examples/minimal-python-plugin`](examples/minimal-python-plugin)
+- examples index: [`examples/README.md`](examples/README.md)
+
+Plugin base image:
+
+- Dockerfile: [`docker/base-image/Dockerfile`](docker/base-image/Dockerfile)
+- docs: [`docker/base-image/README.md`](docker/base-image/README.md)
+
 ## Requirements
 
 - Python `>=3.11`
@@ -122,6 +132,7 @@ python -m build
 - CI workflow: `.github/workflows/ci.yml`
 - tag release workflow: `.github/workflows/release.yml`
 - release process notes: [`RELEASE.md`](RELEASE.md)
+- tagged releases also publish `ghcr.io/<owner>/acmed-plugin-base-image`
 
 ## License
 
